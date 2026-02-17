@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Gelişmiş Müzik Akademisi SPA</title>
+  <title>Müzik Akademisi - Kapsamlı Eğitim</title>
   <style>
     /* --- CSS Reset & Variables --- */
     :root {
@@ -31,11 +31,28 @@
       background-color: var(--bg-color);
       color: var(--text-primary);
       font-family: var(--font-main);
-      line-height: 1.6;
+      line-height: 1.7;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       overflow-x: hidden;
+    }
+
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-color);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--surface-hover);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--text-muted);
     }
 
     /* --- Layout --- */
@@ -45,19 +62,20 @@
       padding: 2rem;
       width: 100%;
       flex: 1;
-      /* Hidden until init */
       display: none;
       opacity: 0;
       transition: opacity 0.5s ease;
     }
 
     #app.visible {
-      display: flex;
+      display: grid;
+      grid-template-columns: 3fr 1fr;
+      gap: 2rem;
       opacity: 1;
-      flex-direction: column;
     }
 
     header {
+      grid-column: 1 / -1;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -97,12 +115,52 @@
       color: #fff;
     }
 
+    /* --- Main Content Area --- */
+    .main-col {
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+    }
+
+    /* --- Sidebar --- */
+    .sidebar-col {
+      background: var(--surface-color);
+      border-radius: var(--card-radius);
+      padding: 1.5rem;
+      height: fit-content;
+      position: sticky;
+      top: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .sidebar-title {
+      color: var(--secondary-color);
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 0.5rem;
+    }
+
+    .song-list {
+      list-style: none;
+    }
+
+    .song-item {
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    .song-item strong {
+      color: var(--text-primary);
+      display: block;
+    }
+
     /* --- Dashboard Grid --- */
     .dashboard-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 1.5rem;
-      margin-bottom: 3rem;
     }
 
     .dash-card {
@@ -118,17 +176,12 @@
       font-size: 1.2rem;
     }
 
-    .dash-card p {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      margin-bottom: 1rem;
-    }
-
     .ai-lesson-box {
       background: rgba(94, 234, 212, 0.05);
       padding: 1rem;
       border-radius: 8px;
       border-left: 3px solid var(--secondary-color);
+      margin-bottom: 1rem;
     }
 
     .refresh-btn {
@@ -140,48 +193,20 @@
       border-radius: 4px;
       cursor: pointer;
       font-size: 0.85rem;
-      margin-top: 0.5rem;
+      width: 100%;
     }
 
     .refresh-btn:hover {
       opacity: 0.9;
     }
 
-    /* --- Weekly Plan Table --- */
-    .weekly-plan {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 4px;
-      font-size: 0.85rem;
-      margin-top: 0.5rem;
-    }
-
-    .day-box {
-      background: rgba(255, 255, 255, 0.03);
-      padding: 8px;
-      border-radius: 4px;
-      text-align: center;
-    }
-
-    .day-name {
-      color: var(--primary-color);
-      font-weight: bold;
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    .day-task {
-      color: var(--text-muted);
-      line-height: 1.3;
-    }
-
-    /* --- Content Sections --- */
+    /* --- Generic Section Styles --- */
     .section-title {
-      font-size: 1.5rem;
+      font-size: 1.8rem;
       color: var(--text-primary);
-      margin: 2rem 0 1rem;
-      padding-left: 0.5rem;
-      border-left: 4px solid var(--primary-color);
+      margin-bottom: 1.5rem;
+      padding-left: 0.8rem;
+      border-left: 5px solid var(--primary-color);
     }
 
     .cards-container {
@@ -197,17 +222,18 @@
       cursor: pointer;
       transition: all var(--transition-speed);
       position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.02);
     }
 
     .content-card:hover {
-      transform: translateY(-3px);
+      transform: translateY(-4px);
       background: var(--surface-hover);
       border-color: var(--primary-color);
     }
 
     .card-head {
-      font-size: 1.25rem;
-      font-weight: 600;
+      font-size: 1.3rem;
+      font-weight: 700;
       color: var(--text-primary);
       margin-bottom: 0.5rem;
     }
@@ -215,20 +241,20 @@
     .card-sub {
       font-size: 0.9rem;
       color: var(--text-muted);
+      line-height: 1.4;
     }
 
-    /* --- Sub Options --- */
     .sub-menu {
       max-height: 0;
       overflow: hidden;
       opacity: 0;
-      transition: all 0.3s ease;
+      transition: all 0.4s ease;
     }
 
     .content-card.active .sub-menu {
-      max-height: 800px;
+      max-height: 1000px;
       opacity: 1;
-      margin-top: 1rem;
+      margin-top: 1.5rem;
       padding-top: 1rem;
       border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
@@ -236,8 +262,8 @@
     .sub-btn {
       display: block;
       width: 100%;
-      padding: 8px 12px;
-      margin-bottom: 4px;
+      padding: 10px 14px;
+      margin-bottom: 6px;
       background: rgba(255, 255, 255, 0.03);
       border: none;
       color: var(--text-muted);
@@ -245,12 +271,14 @@
       border-radius: 6px;
       cursor: pointer;
       transition: 0.2s;
+      font-size: 0.95rem;
     }
 
     .sub-btn:hover {
       background: var(--primary-color);
       color: #000;
       font-weight: 600;
+      padding-left: 18px;
     }
 
     /* --- Detail Modal --- */
@@ -260,11 +288,18 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0, 0, 0, 0.9);
+      background: rgba(0, 0, 0, 0.95);
       z-index: 200;
       padding: 2rem;
       overflow-y: auto;
       display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .detail-overlay.open {
+      display: block;
+      opacity: 1;
     }
 
     .detail-content {
@@ -274,18 +309,21 @@
       padding: 3rem;
       border-radius: 16px;
       position: relative;
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.5);
     }
 
     .close-detail {
       position: absolute;
-      top: 1.5rem;
-      right: 1.5rem;
+      top: 2rem;
+      right: 2rem;
       background: transparent;
-      border: 1px solid var(--accent-color);
+      border: 2px solid var(--accent-color);
       color: var(--accent-color);
-      padding: 0.5rem 1rem;
+      padding: 0.5rem 1.2rem;
       border-radius: 50px;
       cursor: pointer;
+      font-weight: bold;
+      transition: 0.2s;
     }
 
     .close-detail:hover {
@@ -295,20 +333,23 @@
 
     .article h2 {
       color: var(--primary-color);
-      font-size: 2rem;
-      margin-bottom: 1rem;
+      font-size: 2.2rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 1rem;
     }
 
     .article h3 {
       color: var(--secondary-color);
-      font-size: 1.4rem;
-      margin: 1.5rem 0 0.8rem;
+      font-size: 1.5rem;
+      margin: 2rem 0 1rem;
     }
 
     .article p {
-      margin-bottom: 1rem;
-      font-size: 1.05rem;
+      margin-bottom: 1.2rem;
+      font-size: 1.1rem;
       color: #cbd5e1;
+      text-align: justify;
     }
 
     .article ul {
@@ -318,7 +359,12 @@
     }
 
     .article li {
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.8rem;
+      font-size: 1.05rem;
+    }
+
+    .article strong {
+      color: var(--text-primary);
     }
 
     .video-container {
@@ -326,9 +372,10 @@
       padding-bottom: 56.25%;
       height: 0;
       background: #000;
-      margin: 2rem 0;
-      border-radius: 8px;
+      margin: 2.5rem 0;
+      border-radius: 12px;
       overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
     }
 
     .video-container iframe {
@@ -353,59 +400,76 @@
 
     .onboard-card {
       background: var(--surface-color);
-      padding: 2.5rem;
+      padding: 3rem;
       border-radius: 16px;
       width: 100%;
-      max-width: 420px;
+      max-width: 450px;
       box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .form-group {
-      margin-bottom: 1.2rem;
+      margin-bottom: 1.5rem;
     }
 
     label {
       display: block;
-      margin-bottom: 0.5rem;
-      font-size: 0.9rem;
+      margin-bottom: 0.8rem;
+      font-size: 1rem;
       color: var(--text-muted);
     }
 
     input,
     select {
       width: 100%;
-      padding: 0.8rem;
+      padding: 1rem;
       background: rgba(0, 0, 0, 0.3);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 6px;
+      border-radius: 8px;
       color: white;
-      font-size: 1rem;
+      font-size: 1.1rem;
+      outline: none;
+      transition: border 0.3s;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--primary-color);
     }
 
     .btn-start {
       width: 100%;
-      padding: 1rem;
+      padding: 1.2rem;
       background: var(--primary-color);
       border: none;
       color: #000;
-      font-weight: bold;
-      border-radius: 6px;
+      font-weight: 800;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       margin-top: 1rem;
+      transition: transform 0.2s;
     }
 
-    @media (max-width: 768px) {
-      .weekly-plan {
+    .btn-start:hover {
+      transform: scale(1.02);
+      background: #e9d5ff;
+    }
+
+    @media (max-width: 1024px) {
+      #app.visible {
         grid-template-columns: 1fr;
       }
 
-      .dash-card {
-        margin-bottom: 1rem;
+      .sidebar-col {
+        position: relative;
+        top: 0;
+        order: 3;
       }
 
       .detail-content {
-        padding: 1.5rem;
+        padding: 2rem;
+        margin: 1rem;
       }
     }
   </style>
@@ -416,7 +480,10 @@
   <!-- Onboarding -->
   <div id="onboarding-overlay" class="onboarding">
     <div class="onboard-card">
-      <h2 style="color:var(--primary-color); margin-bottom:1.5rem; text-align:center;">Müzik Akademisi'ne Katıl</h2>
+      <h2 style="color:var(--primary-color); margin-bottom:0.5rem; text-align:center;">Müzik Akademisi</h2>
+      <p style="text-align:center; color:var(--text-muted); margin-bottom:2rem;">Kişiselleştirilmiş eğitim yolculuğuna
+        başla.</p>
+
       <div class="form-group">
         <label>Kullanıcı Adı</label>
         <input type="text" id="inp-name" placeholder="Adınız...">
@@ -439,11 +506,11 @@
           <option value="Bateri">Bateri</option>
         </select>
       </div>
-      <button class="btn-start" onclick="saveUser()">Eğitime Başla</button>
+      <button class="btn-start" onclick="saveUser()">Başla</button>
     </div>
   </div>
 
-  <!-- App Content -->
+  <!-- Main App -->
   <div id="app">
     <header>
       <h1>Müzik Akademisi</h1>
@@ -453,33 +520,59 @@
       </div>
     </header>
 
-    <!-- Dashboard -->
-    <div class="dashboard-grid">
-      <!-- AI Lesson -->
-      <div class="dash-card">
-        <h3>🎵 Günün Yapay Zeka Dersi</h3>
-        <div id="ai-lesson-box" class="ai-lesson-box">
-          <!-- Dynamic Content -->
+    <!-- Center Column -->
+    <div class="main-col">
+
+      <!-- Dashboard -->
+      <div class="dashboard-grid">
+        <div class="dash-card">
+          <h3>⚡ Günlük AI Dersi</h3>
+          <div id="ai-lesson-box" class="ai-lesson-box">
+            <!-- Dynamic Content -->
+          </div>
+          <button class="refresh-btn" onclick="generateLesson()">Dersi Atla ⟳</button>
         </div>
-        <button class="refresh-btn" onclick="generateLesson()">Dersi Atla ⟳</button>
+
+        <div class="dash-card">
+          <h3>📅 Haftalık Program</h3>
+          <div id="weekly-plan" style="font-size:0.9rem; color:var(--text-muted);">
+            <!-- Dynamic Content -->
+          </div>
+        </div>
       </div>
 
-      <!-- Weekly Plan -->
-      <div class="dash-card">
-        <h3>📅 Haftalık Programım</h3>
-        <div id="weekly-plan" class="weekly-plan">
-          <!-- Dynamic Content -->
-        </div>
+      <!-- Genres Section -->
+      <div>
+        <h2 class="section-title">Müzik Türleri</h2>
+        <div class="cards-container" id="genres-container"></div>
       </div>
+
+      <!-- Instruments Section -->
+      <div>
+        <h2 class="section-title">Enstrümanlar</h2>
+        <div class="cards-container" id="instruments-container"></div>
+      </div>
+
+      <!-- Classical Section -->
+      <div>
+        <h2 class="section-title">Klasik Müzik Dehaları</h2>
+        <div class="cards-container" id="classical-container"></div>
+      </div>
+
     </div>
 
-    <!-- Genres -->
-    <h2 class="section-title">Müzik Türleri</h2>
-    <div class="cards-container" id="genres-container"></div>
-
-    <!-- Instruments -->
-    <h2 class="section-title">Enstrümanlar</h2>
-    <div class="cards-container" id="instruments-container"></div>
+    <!-- Sidebar Column -->
+    <aside class="sidebar-col">
+      <h3 class="sidebar-title">Önerilen Şarkılar</h3>
+      <ul class="song-list">
+        <li class="song-item"><strong>Metallica</strong> Master of Puppets</li>
+        <li class="song-item"><strong>Nirvana</strong> Smells Like Teen Spirit</li>
+        <li class="song-item"><strong>Tame Impala</strong> The Less I Know The Better</li>
+        <li class="song-item"><strong>Korn</strong> Freak on a Leash</li>
+        <li class="song-item"><strong>Chopin</strong> Nocturne Op.9 No.2</li>
+        <li class="song-item"><strong>Beethoven</strong> Moonlight Sonata</li>
+      </ul>
+    </aside>
 
   </div>
 
@@ -492,105 +585,210 @@
   </div>
 
   <script>
-    // --- Data: 30 Days Expiry ---
+    // --- User System: 30 Days Expiry ---
     const STORAGE_KEY = 'musicAppUser_v2';
-    const EXPIRY_MS = 30 * 24 * 60 * 60 * 1000; // 30 Days
+    const EXPIRY_MS = 30 * 24 * 60 * 60 * 1000;
 
     // --- Content Database ---
     const DB = {
       genres: [
         {
-          id: 'metal', title: 'Metal', desc: 'Sert riff\'ler, agresif ritimler.',
+          id: 'metal', title: 'Metal Müziği', desc: 'Distortion, hız ve teknik detaylar.',
           subs: [
+            {
+              id: 'history', name: 'Metal Tarihi ve Ton Yapısı', content: `
+                        <h2>Metal Tarihi ve Ton Yapısı</h2>
+                        <p>Metal müzik, 1960'ların sonunda ve 1970'lerin başında hard rock'ın köklerinden evrilerek ortaya çıkmıştır. Black Sabbath, Led Zeppelin ve Deep Purple gibi gruplar bu türün öncüleri sayılır. Temelinde agresiflik, yüksek ses ve teknik beceri yatar.</p>
+                        <h3>Ton Yapısı ve Distortion</h3>
+                        <p>Metal müziğin en ayırt edici özelliği "Distortion" (Bozulma) efektidir. Gitar sinyali, amfi veya pedallar aracılığıyla o kadar güçlendirilir ki dalga formu kareleşir (clipping). Bu, sese harmonik zenginlik ve sustain (uzama) katar.</p>
+                        <ul>
+                            <li><strong>High Gain Amfiler:</strong> Mesa Boogie, Marshall JCM800 gibi amfiler metal tonunun temelidir.</li>
+                            <li><strong>Scooped Mids:</strong> Modern metalde orta frekanslar (Mids) kısılarak bas ve tizlerin artırılması yaygındır (V-Equalizer ayarı).</li>
+                        </ul>
+                        <h3>Ritim Mantığı</h3>
+                        <p>Metal ritimleri genellikle 4/4'lük ölçüdedir ancak vuruşlar (accent) çok serttir. Gitar ve davulun (özellikle Kick davulunun) senkronize olması kuraldır. Buna "Locking in" denir.</p>
+                    `},
             {
               id: 'thrash', name: 'Thrash Metal', content: `
                         <h2>Thrash Metal</h2>
-                        <p>1980'lerin başında ortaya çıkan, hız ve agresifliği birleştiren tür. Metallica, Slayer, Megadeth öncüleridir.</p>
-                        <h3>Karakteristik Özellikler</h3>
+                        <p>Hız ve agresifliğin zirvesi. NWOBHM (New Wave of British Heavy Metal) ve Hardcore Punk'ın karışımıdır. "Big Four" olarak bilinen Metallica, Slayer, Megadeth ve Anthrax bu türü tanımlamıştır.</p>
+                        <h3>Teknik Özellikler</h3>
                         <ul>
-                            <li><strong>Hız:</strong> Genellikle 180+ BPM tempolarda çalınır.</li>
-                            <li><strong>Palm Mute:</strong> Gitar telleri susturularak (chugging) ritmik vurgu yapılır.</li>
-                            <li><strong>Çift Kros:</strong> Davulda sürekli çift pedal (double bass) kullanımı.</li>
+                            <li><strong>Hızlı Tempolar:</strong> Genellikle 180 BPM üzerindedir.</li>
+                            <li><strong>Palm Mute (Avuç İçi Susturma):</strong> Sağ elin avuç içi gitar köprüsüne yaslanarak teller susturulur. Bu, o karakteristik "chug-chug" sesini yaratır.</li>
+                            <li><strong>Downpicking:</strong> Sadece aşağı vuruş yaparak daha agresif ve net bir ton elde edilir (Örn: James Hetfield tekniği).</li>
                         </ul>
-                        <h3>Örnek Riff Tekniği</h3>
-                        <p>Hızlı alternate picking ile E telinde "0-0-0" palm mute yaparken araya akor vuruşları ekleyin.</p>
-                        <div class="video-container"><iframe src="https://www.youtube.com/embed/WdbhhHnDQ70" allowfullscreen></iframe></div>
+                        <h3>Örnek Şarkı Analizi: Master of Puppets</h3>
+                        <p>Metallica'nın bu başyapıtı, sürekli değişen kromatik riff'ler ve senkoplu (aksak) ritimler içerir. E telindeki hızlı downpicking ve aralardaki power chord vuruşları Thrash metalin ders kitabıdır.</p>
                     `},
             {
               id: 'death', name: 'Death Metal', content: `
                         <h2>Death Metal</h2>
-                        <p>Daha ağır, daha karanlık ve brutal vokaller içeren metal türü. Death, Cannibal Corpse örnek verilebilir.</p>
-                        <h3>Teknikler</h3>
+                        <p>Thrash Metal'den türeyen, ancak daha karanlık, daha ağır ve teknik olarak daha karmaşık bir türdür. Vokaller melodik olmaktan ziyade ritmik ve hırıltılıdır.</p>
+                        <h3>Karakteristikler</h3>
                         <ul>
-                            <li><strong>Tremolo Picking:</strong> Tek bir notaya çok hızlı ve sürekli vuruş.</li>
-                            <li><strong>Growl Vokal:</strong> Gırtlaktan gelen hırıltılı vokal tekniği.</li>
-                            <li><strong>Downtuning:</strong> Gitarlar D, C veya daha pes seslere akort edilir.</li>
+                            <li><strong>Growl Vokal (Böğürtü):</strong> Ses tellerini kullanmadan gırtlaktan ve diyaframdan gelen brutal vokal tekniği.</li>
+                            <li><strong>Downtuning:</strong> Gitarlar standart E yerine D, C veya B'ye akort edilir. Bu, tonu ağırlaştırır.</li>
+                            <li><strong>Blast Beat:</strong> Davulda trampet ve kick'in inanılmaz hızda ardışık çalınmasıdır.</li>
                         </ul>
-                        <div class="video-container"><iframe src="https://www.youtube.com/embed/zguCFjHyVeM" allowfullscreen></iframe></div>
+                        <p>Referans Gruplar: Death, Cannibal Corpse, Morbid Angel.</p>
+                    `},
+            {
+              id: 'doom', name: 'Doom Metal', content: `
+                        <h2>Doom Metal</h2>
+                        <p>Black Sabbath'ın mirasını devralan, yavaş tempolu (bazen 60 BPM altı) ve melankolik atmosferli bir türdür. Hızdan ziyade ağırlığa (Heaviness) önem verilir.</p>
+                        <p>Gitarlar genellikle çok fazla Fuzz efektine sahiptir ve sustain (nota uzaması) çok önemlidir.</p>
                     `}
           ]
         },
         {
-          id: 'rock', title: 'Rock', desc: 'Elektro gitarın temeli.',
+          id: 'rock', title: 'Rock Müzik', desc: 'Klasik, Alternatif ve Modern tınılar.',
           subs: [
-            { id: 'classic', name: 'Klasik Rock', content: `<h2>Klasik Rock</h2><p>Blues temelli, pentatonik gamların hakim olduğu 60'lar ve 70'ler müziği.</p>` },
-            { id: 'alt', name: 'Alternative Rock', content: `<h2>Alternative Rock</h2><p>90'larda yükselen, daha kirli (grimy) tonlar ve duygusal sözler.</p>` }
-          ]
-        },
-        {
-          id: 'jazz', title: 'Jazz', desc: 'Swing, doğaçlama ve kompleks armoni.',
-          subs: [
-            { id: 'swing', name: 'Swing', content: `<h2>Swing</h2><p>Cazın en ritmik ve dans edilebilir formu. 4/4'lük ölçüde 2. ve 4. vuruşların vurgulanması.</p>` },
-            { id: 'fusion', name: 'Fusion', content: `<h2>Jazz Fusion</h2><p>Rock enstrümanları ve enerjisi ile Caz armonilerinin birleşimi.</p>` }
-          ]
-        },
-        {
-          id: 'blues', title: 'Blues', desc: 'Hüznün 12 ölçülük ifadesi.',
-          subs: [
-            { id: 'delta', name: 'Delta Blues', content: `<h2>Delta Blues</h2><p>Akustik gitar ve slide tekniği ile icra edilen en köklü form.</p>` },
-            { id: 'chicago', name: 'Chicago Blues', content: `<h2>Chicago Blues</h2><p>Elektrikli enstrümanların (Amfili mızıka, elektro gitar) kullanıldığı şehir blues'u.</p>` }
+            {
+              id: 'classic_rock', name: 'Klasik Rock', content: `
+                        <h2>Klasik Rock (Classic Rock)</h2>
+                        <p>1960'lardan 80'lerin sonuna kadar uzanan, Blues temelli rock müzik dönemini kapsar. Temel yapısı Verse-Chorus-Verse (Kıta-Nakarat-Kıta) formundadır.</p>
+                        <h3>Ses Karakteristiği</h3>
+                        <ul>
+                            <li><strong>Overdrive:</strong> Distortion'dan daha hafif, lambalı amfinin doğal kırılması (breakup) ile oluşan ton.</li>
+                            <li><strong>Pentatonik Gam:</strong> Soloların %90'ı Pentatonik minör veya majör gam üzerine kuruludur.</li>
+                        </ul>
+                        <h3>Örnek: Smells Like Teen Spirit – Nirvana</h3>
+                        <p>Aslında Grunge (Alternatif Rock) olsa da, klasik rock formlarını (Sessiz Kıta / Gürültülü Nakarat) mükemmel uygular. 4 akorlu basit bir döngü ve ham enerjiye dayanır.</p>
+                    `},
+            {
+              id: 'alt_rock', name: 'Alternatif Rock', content: `
+                        <h2>Alternatif Rock</h2>
+                        <p>Mainstream ticari rock müziğine karşı bir tepki olarak 80'lerde yeraltında doğmuş, 90'larda patlamıştır. Ses yapısı daha deneyseldir.</p>
+                        <h3>Örnek: The Less I Know The Better – Tame Impala</h3>
+                        <p>Burada rock enstrümanları (özellikle bas gitar) psikedelik efektlerle (Phaser, Chorus) harmanlanır. Riff, gitardan çok bas gitar tarafından yürütülür. Bu modern rock anlayışının güzel bir örneğidir.</p>
+                    `}
           ]
         }
       ],
       instruments: [
         {
-          id: 'guitar', title: 'Gitar', desc: 'Klavye, teller ve sonsuz olasılık.',
+          id: 'guitar', title: 'Gitar Dünyası', desc: 'Klasik, Akustik, Elektro ve Bas.',
           subs: [
-            { id: 'classic_g', name: 'Klasik Gitar', content: `<h2>Klasik Gitar</h2><p>Naylon telli, parmakla çalınan ve klasik müziğin temelini oluşturan gitar.</p>` },
+            {
+              id: 'classic_g', name: 'Klasik Gitar', content: `
+                        <h2>Klasik Gitar</h2>
+                        <p>Müziğe başlamak için en sık tercih edilen enstrümandır. Gövdesi daha küçüktür, telleri naylondur ve klavyesi geniştir. Pena ile değil, tırnak/parmak ile (Fingerstyle) çalınır.</p>
+                        <div class="video-container"><iframe src="https://www.youtube.com/embed/OIv6vwylSf4" allowfullscreen></iframe></div>
+                    `},
             {
               id: 'electric_g', name: 'Elektro Gitar', content: `
                         <h2>Elektro Gitar</h2>
-                        <p>Manyetikler sayesinde sesi elektriğe çeviren gitar. Rock ve Metal'in kalbi.</p>
-                        <h3>Temel Teknikler</h3>
+                        <p>Gövdesi genellikle doludur (Solid body). Sesi üzerindeki manyetikler (Pickup) ile algılar ve kablo ile amfiye iletir.</p>
+                        <h3>Manyetik Sistemleri</h3>
                         <ul>
-                            <li><strong>Bending:</strong> Teli iterek notayı inceltme.</li>
-                            <li><strong>Vibrato:</strong> Sesi dalgalandırma.</li>
-                            <li><strong>Hammer-on/Pull-off:</strong> Legato çalma teknikleri.</li>
+                            <li><strong>Single Coil:</strong> Daha parlak, net ve camsı bir ton (Fender Stratocaster).</li>
+                            <li><strong>Humbucker:</strong> İki bobinli, gürültüsüz, daha koyu ve güçlü bir ton (Gibson Les Paul). Rock ve Metal için idealdir.</li>
                         </ul>
-                        <div class="video-container"><iframe src="https://www.youtube.com/embed/Q4M4e4A8hEc" allowfullscreen></iframe></div>
+                        <h3>İleri Seviye Teknikler</h3>
+                        <ul>
+                            <li><strong>Sweep Picking:</strong> Penayı tellerin üzerinde tek bir yöne süpürerek çok hızlı arpej çalma.</li>
+                            <li><strong>Legato:</strong> Penayı az kullanarak, sadece sol el parmaklarıyla (Hammer-on/Pull-off) akıcı çalma.</li>
+                        </ul>
+                        <div class="video-container"><iframe src="https://www.youtube.com/embed/SljcdDZs5wI" allowfullscreen></iframe></div>
                     `},
-            { id: 'bass_g', name: 'Bas Gitar', content: `<h2>Bas Gitar</h2><p>Ritim ve melodinin köprüsü. Genellikle 4 telli ve kalın sesli.</p>` }
+            {
+              id: 'bass_g', name: 'Bas Gitar', content: `
+                        <h2>Bas Gitar</h2>
+                        <p>Genellikle 4 tellidir ve gitarın bir oktav altından çalar. Ritim (Davul) ile melodi (Gitar/Vokal) arasındaki köprüdür. Grupların duyulmayan kahramanıdır.</p>
+                        <h3>Çalma Teknikleri</h3>
+                        <ul>
+                            <li><strong>Fingerstyle:</strong> İşaret ve orta parmak ile tellere vurarak çalma.</li>
+                            <li><strong>Slap:</strong> Başparmak ile tele vurup (thump), işaret parmağı ile teli çekme (pop) tekniği. Funk müziğin temelidir.</li>
+                        </ul>
+                    `}
           ]
         },
         {
-          id: 'piano', title: 'Piyano', desc: 'Tuşlu çalgıların atası.',
+          id: 'piano', title: 'Piyano', desc: 'Mekanik, teori ve armoni.',
           subs: [
-            { id: 'grand', name: 'Kuyruklu Piyano', content: `<h2>Kuyruklu Piyano</h2><p>Konser salonlarının vazgeçilmezi. Mekanik aksamı yataydır.</p>` }
+            {
+              id: 'mech', name: 'Piyano Mekanizması ve Pedallar', content: `
+                        <h2>Piyano Mekanizması</h2>
+                        <p>Piyano, tuşlara basıldığında içerideki keçeli çekiçlerin tellere vurmasıyla ses çıkaran vurmalı-telli bir çalgıdır.</p>
+                        <h3>Pedallar</h3>
+                        <ul>
+                            <li><strong>Sağ Pedal (Sustain/Damper):</strong> En çok kullanılandır. Basıldığında tellerin üzerindeki susturucular kalkar ve ses uzar.</li>
+                            <li><strong>Sol Pedal (Soft/Una Corda):</strong> Çekiçler yana kayar ve daha az tele vurur, ses yumuşar ve kısılır.</li>
+                            <li><strong>Orta Pedal (Sostenuto):</strong> Sadece basılı tutulan notaların uzamasını sağlar, diğerleri susturulur.</li>
+                        </ul>
+                    `},
+            {
+              id: 'theory', name: 'Teori ve Egzersizler', content: `
+                        <h2>Temel Teori ve Egzersizler</h2>
+                        <p>Piyanoda gelişim, el bağımsızlığı (Hand independence) ile başlar.</p>
+                        <ul>
+                            <li><strong>Hanon Egzersizleri:</strong> Parmakları güçlendirmek ve eşitlemek için yapılan tekrarlı kalıplar.</li>
+                            <li><strong>Akor Kurulumu:</strong> 1-3-5 formülü. Do Majör gamı üzerindeki 1. (Do), 3. (Mi) ve 5. (Sol) sesler Do Majör akorunu oluşturur.</li>
+                        </ul>
+                    `}
           ]
         },
         {
-          id: 'drums', title: 'Bateri', desc: 'Ritmin gücü.',
+          id: 'drums', title: 'Bateri', desc: 'Ritim, koordinasyon ve dinamikler.',
           subs: [
-            { id: 'kit', name: 'Davul Seti', content: `<h2>Davul Seti</h2><p>Trampet, Kros, Tomlar ve Zillerden oluşur. 4 uzuv koordinasyonu gerektirir.</p>` }
+            {
+              id: 'anatomy', name: 'Davul Anatomisi', content: `
+                        <h2>Davul Seti (Drum Kit)</h2>
+                        <p>Modern bir davul seti şu parçalardan oluşur:</p>
+                        <ul>
+                            <li><strong>Kick (Bas Davul):</strong> En kalın ses, sağ ayak ile pedalla çalınır. Ritmin kalbidir (1. ve 3. vuruşlar).</li>
+                            <li><strong>Snare (Trampet):</strong> Derisinin altındaki metal teller (kort) sayesinde cızırtılı, keskin bir ses verir. Ritmin bel kemiğidir (2. ve 4. vuruşlar).</li>
+                            <li><strong>Hi-Hat:</strong> Üst üste duran iki zil. Sol ayak ile açılıp kapatılır. Zamanı tutmak için kullanılır.</li>
+                            <li><strong>Toms:</strong> Genellikle ataklarda (fill) kullanılan, farklı tonlara sahip davullar.</li>
+                            <li><strong>Cymbals (Ziller):</strong> Crash (vurgu) ve Ride (ritim yürüyüşü) zilleri.</li>
+                        </ul>
+                    `},
+            {
+              id: 'tech', name: 'Teknikler ve Egzersizler', content: `
+                        <h2>Teknikler ve Egzersizler</h2>
+                        <p>Davulculuk, 4 uzvun birbirinden bağımsız hareket edebilmesine dayanır.</p>
+                        <ul>
+                            <li><strong>Single Stroke Roll:</strong> R-L-R-L (Sağ-Sol) vuruşları.</li>
+                            <li><strong>Double Stroke Roll:</strong> RR-LL vuruşları.</li>
+                            <li><strong>Ghost Notes:</strong> Trampete çok hafif dokunuşlarla yapılan, ritme "groove" (akıcılık) katan duyulur duyulmaz vuruşlar.</li>
+                            <li><strong>4/4 Rock Beat:</strong> 
+                                <br>- Hi-hat: 1-2-3-4 (8'lik notalarla "1 ve 2 ve...")
+                                <br>- Kick: 1 ve 3'te.
+                                <br>- Snare: 2 ve 4'te.
+                            </li>
+                        </ul>
+                    `}
+          ]
+        }
+      ],
+      classical: [
+        {
+          id: 'composers', title: 'Büyük Besteciler', desc: 'Mozart, Beethoven, Chopin.',
+          subs: [
+            {
+              id: 'mozart', name: 'Wolfgang Amadeus Mozart', content: `
+                        <h2>Mozart</h2>
+                        <p>Klasik dönemin dahi çocuğu. Besteleri berraklık, denge ve şeffaflık ile tanınır. 600'den fazla eser bırakmıştır.</p>
+                    `},
+            {
+              id: 'beethoven', name: 'Ludwig van Beethoven', content: `
+                        <h2>Beethoven</h2>
+                        <p>Romantik dönemin kapısını aralayan dev. Sağır olmasına rağmen 9. Senfoni gibi başyapıtlar bestelemiştir. Eserleri yoğun duygu ve drama içerir (Örn: Moonlight Sonata).</p>
+                    `},
+            {
+              id: 'chopin', name: 'Frédéric Chopin', content: `
+                        <h2>Chopin</h2>
+                        <p>"Piyanonun Şairi". Eserlerinin neredeyse tamamı piyano içindir. Noktürnleri ve Baladları, piyano tekniğinin ve duygusal derinliğin zirvesidir (Örn: Nocturne Op.9 No.2).</p>
+                    `}
           ]
         }
       ]
     };
 
-    // --- Application State ---
+    // --- State & Logic ---
     let currentUser = null;
 
-    // --- Init ---
     window.addEventListener('load', () => {
       loadUser();
     });
@@ -599,14 +797,12 @@
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const data = JSON.parse(raw);
-        const now = Date.now();
-        if ((now - data.savedAt) < EXPIRY_MS) {
+        if ((Date.now() - data.savedAt) < EXPIRY_MS) {
           currentUser = data;
           initApp();
           return;
         }
       }
-      // No valid user
       document.getElementById('onboarding-overlay').style.display = 'flex';
     }
 
@@ -617,18 +813,14 @@
 
       if (!name) return alert('Lütfen isim giriniz.');
 
-      currentUser = {
-        name, level, inst,
-        savedAt: Date.now()
-      };
-
+      currentUser = { name, level, inst, savedAt: Date.now() };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(currentUser));
       document.getElementById('onboarding-overlay').style.display = 'none';
       initApp();
     }
 
     function logout() {
-      if (confirm('Verileriniz silinecek. Emin misiniz?')) {
+      if (confirm('Kayıtlı veriler silinecek. Emin misiniz?')) {
         localStorage.removeItem(STORAGE_KEY);
         location.reload();
       }
@@ -640,87 +832,83 @@
 
       generateLesson();
       renderWeeklyPlan();
-      renderCategories('genres-container', DB.genres);
-      renderCategories('instruments-container', DB.instruments);
+
+      renderSection('genres-container', DB.genres);
+      renderSection('instruments-container', DB.instruments);
+      renderSection('classical-container', DB.classical);
     }
 
-    // --- AI Lesson Logic ---
-    const LESSON_POOLS = {
+    // --- AI Lesson Generator Pool ---
+    const AI_POOLS = {
       'Başlangıç': [
-        "parmak açma egzersizleri yap. Metronomu 60 BPM'e ayarla.",
-        "açık pozisyon akor geçişlerine (Am - E) odaklan.",
-        "kromatik gam çalışması yap (1-2-3-4).",
-        "ritim kulağını geliştirmek için favori şarkına eşlik et.",
-        "temel majör gamı (Do Majör) 1. pozisyonda çalış."
+        "15 dakika boyunca sadece sağ el ritim (downstroke) çalışması yap.",
+        "kullandığın enstrümanda Boş Teller üzerinde temiz ses çıkarma egzersizi yap.",
+        "Metronomu 60 BPM'e al ve sadece 4'lük vuruşlarla zamanlamayı oturt.",
+        "Basit bir akor geçişi (C - G geçişi) üzerinde 50 tekrar yap."
       ],
       'Orta': [
-        "ritim varyasyonları dene. Metronomu 100 BPM yap.",
-        "Pentatonik gam üzerinde doğaçlama yap.",
-        "Alternate picking tekniğini 16'lık notalarla geliştir.",
-        "Legato (Hammer-on/Pull-off) kombinasyonları çalış.",
-        "Üçlemeler (Triplets) ile ritim duygunu zorla."
+        "kendine ait 4 ölçülük bir Metal Riff'i yazmayı dene.",
+        "bildiğin bir gamı (örneğin Minör gam) tüm klavyede gezerek çal.",
+        "Eğer gitarcıysan Alternate Picking ile 16'lık notalar çalış (90 BPM).",
+        "Davulcuysan Paradiddle egzersizini Kick üzerinde dene."
       ],
       'Profesyonel': [
-        "sınırlarını zorla. Poliritimler ve 160+ BPM üzerine çalış.",
-        "Sweep picking arpejlerini 5 telli formlarda dene.",
-        "Modları (Dorian, Lydian) birbirine bağlayarak solo at.",
-        "Hibrit picking (Pena + Parmak) tekniklerini uygula.",
-        "Karmaşık zaman imzaları (7/8, 5/4) üzerine riff yaz."
+        "Sweep Picking arpejlerini metronom ile 140 BPM'de temizle.",
+        "Bugün hız günü! dayanıklılık için 3 dakika kesintisiz Tremolo Picking yap.",
+        "Karmaşık bir arpeji (Diminished 7th) farklı pozisyonlarda uygula.",
+        "Ghost note dinamiklerine odaklanarak bir Funk groove çal."
       ]
     };
 
     function generateLesson() {
       const level = currentUser.level;
-      const inst = currentUser.inst;
-      let pool = LESSON_POOLS[level] || LESSON_POOLS['Başlangıç'];
-
-      // Pick random
+      const pool = AI_POOLS[level];
       const randomTip = pool[Math.floor(Math.random() * pool.length)];
 
-      const topic = `${level} Seviye ${inst} Dersi`;
-      const lessonText = `Bugün senin için hedef: ${inst} üzerinde ${randomTip}`;
-
       const box = document.getElementById('ai-lesson-box');
-      box.innerHTML = `<strong>${topic}</strong><p>${lessonText}</p>`;
+      box.innerHTML = `
+            <strong>Bugünün Hedefi (${level})</strong>
+            <p style="margin-top:0.5rem; color:#cbd5e1;">${currentUser.inst} için: ${randomTip}</p>
+        `;
     }
 
     // --- Weekly Plan Logic ---
     function renderWeeklyPlan() {
-      const days = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
-      const planContainer = document.getElementById('weekly-plan');
-      let html = '';
+      const level = currentUser.level;
+      let planHtml = "";
 
-      // Simple generators based on level
-      const tasksBeginner = ['Parmak Egzersizi', 'Akor Geçişleri', 'Ritim Çalışması', 'Dinlenme', 'Gam Çalışması', 'Repertuar', 'Serbest Çalışma'];
-      const tasksInter = ['Isınma & Gamlar', 'Teknik (Legato)', 'Hız Egzersizi', 'Teori', 'Riff Yazımı', 'Kulak Eğitimi', 'Jam Session'];
-      const tasksPro = ['Advanced Warmup', 'Sweep/Tapping', 'Composition', 'Improvisation', 'Speed Picking', 'Live Sim.', 'Rest'];
+      const plans = {
+        'Başlangıç': ["Temel Ritim", "Akor Geçişleri", "Parmak Egzersizi", "Dinlenme", "Şarkı Çalışması", "Tekrar", "Serbest"],
+        'Orta': ["Ölçü/Gam Teorisi", "Riff Yazımı", "Hız Artırma", "Kulak Eğitimi", "Teknik (Legato/Palm Mute)", "Jam Session", "Analiz"],
+        'Profesyonel': ["İleri Teknik (Sweep)", "Kompozisyon", "Hız/Dayanıklılık", "Modlar", "Doğaçlama", "Kayır/Demo", "Dinlenme"]
+      };
 
-      let tasks = tasksInter;
-      if (currentUser.level === 'Başlangıç') tasks = tasksBeginner;
-      if (currentUser.level === 'Profesyonel') tasks = tasksPro;
+      const days = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
+      const tasks = plans[level];
 
-      days.forEach((day, index) => {
-        html += `
-                <div class="day-box">
-                    <span class="day-name">${day}</span>
-                    <span class="day-task">${tasks[index]}</span>
+      planHtml = `<div style="display:grid; grid-template-columns:repeat(7,1fr); gap:5px; text-align:center;">`;
+      days.forEach((day, i) => {
+        planHtml += `
+                <div style="background:rgba(255,255,255,0.05); padding:5px; border-radius:4px;">
+                    <div style="color:var(--primary-color); font-weight:bold;">${day}</div>
+                    <div>${tasks[i]}</div>
                 </div>
             `;
       });
-      planContainer.innerHTML = html;
+      planHtml += `</div>`;
+
+      document.getElementById('weekly-plan').innerHTML = planHtml;
     }
 
-    // --- UI Rendering ---
-    function renderCategories(containerId, dataList) {
+    // --- Renderer ---
+    function renderSection(containerId, dataList) {
       const container = document.getElementById(containerId);
       container.innerHTML = '';
 
       dataList.forEach(item => {
         let subsHtml = '';
         item.subs.forEach(sub => {
-          // Escape simple quotes for onclick
-          const safeName = sub.name.replace(/'/g, "\\'");
-          subsHtml += `<button class="sub-btn" onclick="openContent('${item.id}', '${sub.id}')">› ${sub.name}</button>`;
+          subsHtml += `<button class="sub-btn" onclick="openModal('${item.id}', '${sub.id}')">› ${sub.name}</button>`;
         });
 
         const card = document.createElement('div');
@@ -731,12 +919,8 @@
                 <div class="sub-menu">${subsHtml}</div>
             `;
 
-        // Expand Interaction
         card.onclick = (e) => {
-          // if clicked on button, don't toggle
           if (e.target.tagName === 'BUTTON') return;
-
-          // Toggle active class
           const isActive = card.classList.contains('active');
           document.querySelectorAll('.content-card').forEach(c => c.classList.remove('active'));
           if (!isActive) card.classList.add('active');
@@ -747,38 +931,28 @@
     }
 
     // --- Modal Logic ---
-    function openContent(catId, subId) {
-      let contentObj = null;
+    function openModal(parentId, subId) {
+      // Flatten DB search
+      const allItems = [...DB.genres, ...DB.instruments, ...DB.classical];
+      const parent = allItems.find(x => x.id === parentId);
+      if (!parent) return;
+      const sub = parent.subs.find(x => x.id === subId);
+      if (!sub) return;
 
-      // Search in DB
-      const allGenres = DB.genres;
-      const allInsts = DB.instruments;
+      document.getElementById('detail-body').innerHTML = sub.content;
 
-      // Find in Genres
-      let parent = allGenres.find(g => g.id === catId);
-      if (parent) contentObj = parent.subs.find(s => s.id === subId);
-
-      // Find in Instruments
-      if (!contentObj) {
-        parent = allInsts.find(i => i.id === catId);
-        if (parent) contentObj = parent.subs.find(s => s.id === subId);
-      }
-
-      if (contentObj) {
-        document.getElementById('detail-body').innerHTML = contentObj.content;
-        document.getElementById('detail-modal').style.display = 'block';
-      }
+      // Open Modal
+      const modal = document.getElementById('detail-modal');
+      modal.classList.add('open');
     }
 
     function closeDetail() {
-      document.getElementById('detail-modal').style.display = 'none';
+      const modal = document.getElementById('detail-modal');
+      modal.classList.remove('open');
       // Stop videos
       const body = document.getElementById('detail-body');
       const iframe = body.querySelector('iframe');
-      if (iframe) {
-        const src = iframe.src;
-        iframe.src = src; // Reset src to stop playback
-      }
+      if (iframe) iframe.src = iframe.src;
     }
 
   </script>
