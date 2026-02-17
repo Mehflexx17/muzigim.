@@ -1,4 +1,5 @@
 # Muzigim
+link:https://mehflexx17.github.io/muzigim./
 
 Muzigim is a modern, interactive music education platform designed as a single-page web application.
 
@@ -32,3 +33,4 @@ This project was created as a portfolio and learning project to practice front-e
 ---
 
 Made with passion for music and code.
+
