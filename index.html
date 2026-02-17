@@ -456,6 +456,62 @@
       background: #e9d5ff;
     }
 
+    /* --- Footer Label --- */
+    .producer-label {
+      position: fixed;
+      bottom: 10px;
+      right: 10px;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 5px 10px;
+      border-radius: 4px;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0.7;
+    }
+
+    /* --- Ad Placeholder --- */
+    .ad-placeholder {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px dashed var(--text-muted);
+      border-radius: 8px;
+      padding: 2rem;
+      margin-top: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      text-align: center;
+      min-height: 150px;
+    }
+
+    /* --- Responsive Tables --- */
+    .weekly-scroll-container {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      margin-top: 0.5rem;
+      padding-bottom: 0.5rem;
+    }
+
+    .weekly-plan-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(100px, 1fr));
+      gap: 5px;
+      text-align: center;
+      min-width: 600px;
+      /* Force minimum width to trigger scroll */
+    }
+
+    @media (max-width: 768px) {
+      .weekly-plan-grid {
+        min-width: 700px;
+      }
+
+      /* Ensure readable on small screens */
+    }
+
     @media (max-width: 1024px) {
       #app.visible {
         grid-template-columns: 1fr;
@@ -476,6 +532,9 @@
 </head>
 
 <body>
+
+  <!-- Producer Label -->
+  <div class="producer-label">Yapımcı: Mehflexx17</div>
 
   <!-- Onboarding -->
   <div id="onboarding-overlay" class="onboarding">
@@ -572,6 +631,14 @@
         <li class="song-item"><strong>Chopin</strong> Nocturne Op.9 No.2</li>
         <li class="song-item"><strong>Beethoven</strong> Moonlight Sonata</li>
       </ul>
+
+      <!-- Ad Placeholder -->
+      <div class="ad-placeholder">
+        <div>
+          <strong>Reklam Alanı</strong><br>
+          <span>Sponsor olmak için iletişime geçin.</span>
+        </div>
+      </div>
     </aside>
 
   </div>
@@ -886,16 +953,16 @@
       const days = ["Pzt", "Sal", "Çar", "Per", "Cum", "Cmt", "Paz"];
       const tasks = plans[level];
 
-      planHtml = `<div style="display:grid; grid-template-columns:repeat(7,1fr); gap:5px; text-align:center;">`;
+      planHtml = `<div class="weekly-scroll-container"><div class="weekly-plan-grid">`;
       days.forEach((day, i) => {
         planHtml += `
-                <div style="background:rgba(255,255,255,0.05); padding:5px; border-radius:4px;">
-                    <div style="color:var(--primary-color); font-weight:bold;">${day}</div>
-                    <div>${tasks[i]}</div>
+                <div style="background:rgba(255,255,255,0.05); padding:8px; border-radius:6px; border:1px solid rgba(255,255,255,0.05);">
+                    <div style="color:var(--primary-color); font-weight:bold; margin-bottom:4px;">${day}</div>
+                    <div style="line-height:1.2;">${tasks[i]}</div>
                 </div>
             `;
       });
-      planHtml += `</div>`;
+      planHtml += `</div></div>`;
 
       document.getElementById('weekly-plan').innerHTML = planHtml;
     }
