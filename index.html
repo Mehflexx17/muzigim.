@@ -4,92 +4,784 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>müziğim.net – Profesyonel Online Müzik Akademisi</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Gelişmiş Müzik Akademisi SPA</title>
+  <style>
+    /* --- CSS Reset & Variables --- */
+    :root {
+      --bg-color: #0f0f13;
+      --surface-color: #1a1a24;
+      --surface-hover: #262635;
+      --primary-color: #d8b4fe;
+      --secondary-color: #5eead4;
+      --accent-color: #f43f5e;
+      --text-primary: #f8fafc;
+      --text-muted: #94a3b8;
+      --font-main: 'Segoe UI', system-ui, sans-serif;
+      --card-radius: 12px;
+      --transition-speed: 0.25s;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-primary);
+      font-family: var(--font-main);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* --- Layout --- */
+    #app {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 2rem;
+      width: 100%;
+      flex: 1;
+      /* Hidden until init */
+      display: none;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+
+    #app.visible {
+      display: flex;
+      opacity: 1;
+      flex-direction: column;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      padding-bottom: 1rem;
+    }
+
+    h1 {
+      color: var(--primary-color);
+      font-size: 2rem;
+      font-weight: 700;
+    }
+
+    .user-panel {
+      text-align: right;
+    }
+
+    .user-info {
+      font-size: 0.9rem;
+      color: var(--secondary-color);
+      margin-bottom: 0.2rem;
+    }
+
+    .logout-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .logout-btn:hover {
+      background: var(--accent-color);
+      color: #fff;
+    }
+
+    /* --- Dashboard Grid --- */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 3rem;
+    }
+
+    .dash-card {
+      background: var(--surface-color);
+      border-radius: var(--card-radius);
+      padding: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .dash-card h3 {
+      color: var(--secondary-color);
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+
+    .dash-card p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    .ai-lesson-box {
+      background: rgba(94, 234, 212, 0.05);
+      padding: 1rem;
+      border-radius: 8px;
+      border-left: 3px solid var(--secondary-color);
+    }
+
+    .refresh-btn {
+      background: var(--secondary-color);
+      border: none;
+      color: #000;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+    }
+
+    .refresh-btn:hover {
+      opacity: 0.9;
+    }
+
+    /* --- Weekly Plan Table --- */
+    .weekly-plan {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+    }
+
+    .day-box {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 8px;
+      border-radius: 4px;
+      text-align: center;
+    }
+
+    .day-name {
+      color: var(--primary-color);
+      font-weight: bold;
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .day-task {
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    /* --- Content Sections --- */
+    .section-title {
+      font-size: 1.5rem;
+      color: var(--text-primary);
+      margin: 2rem 0 1rem;
+      padding-left: 0.5rem;
+      border-left: 4px solid var(--primary-color);
+    }
+
+    .cards-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .content-card {
+      background: var(--surface-color);
+      padding: 1.5rem;
+      border-radius: var(--card-radius);
+      cursor: pointer;
+      transition: all var(--transition-speed);
+      position: relative;
+    }
+
+    .content-card:hover {
+      transform: translateY(-3px);
+      background: var(--surface-hover);
+      border-color: var(--primary-color);
+    }
+
+    .card-head {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .card-sub {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    /* --- Sub Options --- */
+    .sub-menu {
+      max-height: 0;
+      overflow: hidden;
+      opacity: 0;
+      transition: all 0.3s ease;
+    }
+
+    .content-card.active .sub-menu {
+      max-height: 800px;
+      opacity: 1;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .sub-btn {
+      display: block;
+      width: 100%;
+      padding: 8px 12px;
+      margin-bottom: 4px;
+      background: rgba(255, 255, 255, 0.03);
+      border: none;
+      color: var(--text-muted);
+      text-align: left;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .sub-btn:hover {
+      background: var(--primary-color);
+      color: #000;
+      font-weight: 600;
+    }
+
+    /* --- Detail Modal --- */
+    .detail-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.9);
+      z-index: 200;
+      padding: 2rem;
+      overflow-y: auto;
+      display: none;
+    }
+
+    .detail-content {
+      max-width: 900px;
+      margin: 0 auto;
+      background: var(--surface-color);
+      padding: 3rem;
+      border-radius: 16px;
+      position: relative;
+    }
+
+    .close-detail {
+      position: absolute;
+      top: 1.5rem;
+      right: 1.5rem;
+      background: transparent;
+      border: 1px solid var(--accent-color);
+      color: var(--accent-color);
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      cursor: pointer;
+    }
+
+    .close-detail:hover {
+      background: var(--accent-color);
+      color: white;
+    }
+
+    .article h2 {
+      color: var(--primary-color);
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    .article h3 {
+      color: var(--secondary-color);
+      font-size: 1.4rem;
+      margin: 1.5rem 0 0.8rem;
+    }
+
+    .article p {
+      margin-bottom: 1rem;
+      font-size: 1.05rem;
+      color: #cbd5e1;
+    }
+
+    .article ul {
+      margin-left: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: #cbd5e1;
+    }
+
+    .article li {
+      margin-bottom: 0.5rem;
+    }
+
+    .video-container {
+      position: relative;
+      padding-bottom: 56.25%;
+      height: 0;
+      background: #000;
+      margin: 2rem 0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .video-container iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    /* --- Onboarding --- */
+    .onboarding {
+      position: fixed;
+      inset: 0;
+      background: #0f0f13;
+      z-index: 500;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .onboard-card {
+      background: var(--surface-color);
+      padding: 2.5rem;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-size: 0.9rem;
+      color: var(--text-muted);
+    }
+
+    input,
+    select {
+      width: 100%;
+      padding: 0.8rem;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 6px;
+      color: white;
+      font-size: 1rem;
+    }
+
+    .btn-start {
+      width: 100%;
+      padding: 1rem;
+      background: var(--primary-color);
+      border: none;
+      color: #000;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .weekly-plan {
+        grid-template-columns: 1fr;
+      }
+
+      .dash-card {
+        margin-bottom: 1rem;
+      }
+
+      .detail-content {
+        padding: 1.5rem;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <header class="main-header">
-    <a href="index.html" class="logo">müziğim.net</a>
-    <div class="menu-dots-wrap">
-      <button type="button" class="menu-dots-btn" id="menu-dots-btn" aria-label="Menü" aria-expanded="false">
-        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-      </button>
-      <div class="menu-dots-dropdown" id="menu-dots-dropdown" aria-hidden="true">
-        <a href="academy.html" class="dropdown-item">Akademi</a>
-        <a href="rock.html" class="dropdown-item">Rock</a>
+
+  <!-- Onboarding -->
+  <div id="onboarding-overlay" class="onboarding">
+    <div class="onboard-card">
+      <h2 style="color:var(--primary-color); margin-bottom:1.5rem; text-align:center;">Müzik Akademisi'ne Katıl</h2>
+      <div class="form-group">
+        <label>Kullanıcı Adı</label>
+        <input type="text" id="inp-name" placeholder="Adınız...">
+      </div>
+      <div class="form-group">
+        <label>Seviye</label>
+        <select id="inp-level">
+          <option value="Başlangıç">Başlangıç</option>
+          <option value="Orta">Orta</option>
+          <option value="Profesyonel">Profesyonel</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Enstrüman</label>
+        <select id="inp-inst">
+          <option value="Gitar">Gitar</option>
+          <option value="Elektro Gitar">Elektro Gitar</option>
+          <option value="Bas Gitar">Bas Gitar</option>
+          <option value="Piyano">Piyano</option>
+          <option value="Bateri">Bateri</option>
+        </select>
+      </div>
+      <button class="btn-start" onclick="saveUser()">Eğitime Başla</button>
+    </div>
+  </div>
+
+  <!-- App Content -->
+  <div id="app">
+    <header>
+      <h1>Müzik Akademisi</h1>
+      <div class="user-panel">
+        <div class="user-info" id="user-display"></div>
+        <button class="logout-btn" onclick="logout()">Çıkış Yap / Sıfırla</button>
+      </div>
+    </header>
+
+    <!-- Dashboard -->
+    <div class="dashboard-grid">
+      <!-- AI Lesson -->
+      <div class="dash-card">
+        <h3>🎵 Günün Yapay Zeka Dersi</h3>
+        <div id="ai-lesson-box" class="ai-lesson-box">
+          <!-- Dynamic Content -->
+        </div>
+        <button class="refresh-btn" onclick="generateLesson()">Dersi Atla ⟳</button>
+      </div>
+
+      <!-- Weekly Plan -->
+      <div class="dash-card">
+        <h3>📅 Haftalık Programım</h3>
+        <div id="weekly-plan" class="weekly-plan">
+          <!-- Dynamic Content -->
+        </div>
       </div>
     </div>
-  </header>
 
-  <main class="content-area">
-    <section class="hero fullscreen">
-      <div class="hero-bg"></div>
-      <div class="hero-inner">
-        <h1 class="hero-title">müziğim.net</h1>
-        <p class="hero-subtitle">Profesyonel Online Müzik Akademisi</p>
-        <a href="academy.html" class="btn btn-primary">Akademiye Gir</a>
-      </div>
-    </section>
+    <!-- Genres -->
+    <h2 class="section-title">Müzik Türleri</h2>
+    <div class="cards-container" id="genres-container"></div>
 
-    <section class="features">
-      <h2 class="section-heading">Neden müziğim.net?</h2>
-      <div class="feature-grid">
-        <article class="feature-card glass">
-          <h3>Profesyonel Dersler</h3>
-          <p>Sahne seviyesine uygun, adım adım ders programları.</p>
-        </article>
-        <article class="feature-card glass">
-          <h3>Tür Analizleri</h3>
-          <p>Rock, metal, pop, jazz ve daha fazlasında derinlemesine tür incelemeleri.</p>
-        </article>
-        <article class="feature-card glass">
-          <h3>Ünlü Müzisyen İncelemeleri</h3>
-          <p>Efsane isimlerin tarzı, teknikleri ve etkileri.</p>
-        </article>
-        <article class="feature-card glass">
-          <h3>Teknik Gelişim Programı</h3>
-          <p>Alternate picking, palm muting ve ileri teknikler.</p>
-        </article>
-      </div>
-    </section>
+    <!-- Instruments -->
+    <h2 class="section-title">Enstrümanlar</h2>
+    <div class="cards-container" id="instruments-container"></div>
 
-    <section class="genres-section">
-      <h2 class="section-heading">Müzik Türleri</h2>
-      <div class="card-grid">
-        <a href="rock.html" class="link-card glass card"><span>Rock</span></a>
-        <a href="metal.html" class="link-card glass card"><span>Metal</span></a>
-        <a href="pop.html" class="link-card glass card"><span>Pop</span></a>
-        <a href="jazz.html" class="link-card glass card"><span>Jazz</span></a>
-        <a href="blues.html" class="link-card glass card"><span>Blues</span></a>
-        <a href="turk-sanat-muzigi.html" class="link-card glass card"><span>Türk Sanat Müziği</span></a>
-        <a href="turk-halk-muzigi.html" class="link-card glass card"><span>Türk Halk Müziği</span></a>
-        <a href="rap.html" class="link-card glass card"><span>Rap / Hip-Hop</span></a>
-        <a href="klasik-muzik.html" class="link-card glass card"><span>Klasik Müzik</span></a>
-      </div>
-    </section>
+  </div>
 
-    <section class="instruments-section">
-      <h2 class="section-heading">Enstrümanlar</h2>
-      <div class="card-grid">
-        <a href="gitar.html" class="link-card glass card"><span>Gitar</span></a>
-        <a href="elektro-gitar.html" class="link-card glass card"><span>Elektro Gitar</span></a>
-        <a href="bas-gitar.html" class="link-card glass card"><span>Bas Gitar</span></a>
-        <a href="bateri.html" class="link-card glass card"><span>Bateri</span></a>
-        <a href="piyano.html" class="link-card glass card"><span>Piyano</span></a>
-        <a href="keman.html" class="link-card glass card"><span>Keman</span></a>
-        <a href="vokal.html" class="link-card glass card"><span>Vokal</span></a>
-        <a href="baglama.html" class="link-card glass card"><span>Bağlama</span></a>
-      </div>
-    </section>
+  <!-- Full Screen Modal -->
+  <div id="detail-modal" class="detail-overlay">
+    <div class="detail-content">
+      <button class="close-detail" onclick="closeDetail()">Kapat ✕</button>
+      <div id="detail-body" class="article"></div>
+    </div>
+  </div>
 
-    <section class="cta-section">
-      <h2 class="cta-heading">Müzikal yolculuğunu başlat</h2>
-      <a href="academy.html" class="btn btn-primary">Akademiye Git</a>
-    </section>
-  </main>
+  <script>
+    // --- Data: 30 Days Expiry ---
+    const STORAGE_KEY = 'musicAppUser_v2';
+    const EXPIRY_MS = 30 * 24 * 60 * 60 * 1000; // 30 Days
 
-  <script src="script.js"></script>
+    // --- Content Database ---
+    const DB = {
+      genres: [
+        {
+          id: 'metal', title: 'Metal', desc: 'Sert riff\'ler, agresif ritimler.',
+          subs: [
+            {
+              id: 'thrash', name: 'Thrash Metal', content: `
+                        <h2>Thrash Metal</h2>
+                        <p>1980'lerin başında ortaya çıkan, hız ve agresifliği birleştiren tür. Metallica, Slayer, Megadeth öncüleridir.</p>
+                        <h3>Karakteristik Özellikler</h3>
+                        <ul>
+                            <li><strong>Hız:</strong> Genellikle 180+ BPM tempolarda çalınır.</li>
+                            <li><strong>Palm Mute:</strong> Gitar telleri susturularak (chugging) ritmik vurgu yapılır.</li>
+                            <li><strong>Çift Kros:</strong> Davulda sürekli çift pedal (double bass) kullanımı.</li>
+                        </ul>
+                        <h3>Örnek Riff Tekniği</h3>
+                        <p>Hızlı alternate picking ile E telinde "0-0-0" palm mute yaparken araya akor vuruşları ekleyin.</p>
+                        <div class="video-container"><iframe src="https://www.youtube.com/embed/WdbhhHnDQ70" allowfullscreen></iframe></div>
+                    `},
+            {
+              id: 'death', name: 'Death Metal', content: `
+                        <h2>Death Metal</h2>
+                        <p>Daha ağır, daha karanlık ve brutal vokaller içeren metal türü. Death, Cannibal Corpse örnek verilebilir.</p>
+                        <h3>Teknikler</h3>
+                        <ul>
+                            <li><strong>Tremolo Picking:</strong> Tek bir notaya çok hızlı ve sürekli vuruş.</li>
+                            <li><strong>Growl Vokal:</strong> Gırtlaktan gelen hırıltılı vokal tekniği.</li>
+                            <li><strong>Downtuning:</strong> Gitarlar D, C veya daha pes seslere akort edilir.</li>
+                        </ul>
+                        <div class="video-container"><iframe src="https://www.youtube.com/embed/zguCFjHyVeM" allowfullscreen></iframe></div>
+                    `}
+          ]
+        },
+        {
+          id: 'rock', title: 'Rock', desc: 'Elektro gitarın temeli.',
+          subs: [
+            { id: 'classic', name: 'Klasik Rock', content: `<h2>Klasik Rock</h2><p>Blues temelli, pentatonik gamların hakim olduğu 60'lar ve 70'ler müziği.</p>` },
+            { id: 'alt', name: 'Alternative Rock', content: `<h2>Alternative Rock</h2><p>90'larda yükselen, daha kirli (grimy) tonlar ve duygusal sözler.</p>` }
+          ]
+        },
+        {
+          id: 'jazz', title: 'Jazz', desc: 'Swing, doğaçlama ve kompleks armoni.',
+          subs: [
+            { id: 'swing', name: 'Swing', content: `<h2>Swing</h2><p>Cazın en ritmik ve dans edilebilir formu. 4/4'lük ölçüde 2. ve 4. vuruşların vurgulanması.</p>` },
+            { id: 'fusion', name: 'Fusion', content: `<h2>Jazz Fusion</h2><p>Rock enstrümanları ve enerjisi ile Caz armonilerinin birleşimi.</p>` }
+          ]
+        },
+        {
+          id: 'blues', title: 'Blues', desc: 'Hüznün 12 ölçülük ifadesi.',
+          subs: [
+            { id: 'delta', name: 'Delta Blues', content: `<h2>Delta Blues</h2><p>Akustik gitar ve slide tekniği ile icra edilen en köklü form.</p>` },
+            { id: 'chicago', name: 'Chicago Blues', content: `<h2>Chicago Blues</h2><p>Elektrikli enstrümanların (Amfili mızıka, elektro gitar) kullanıldığı şehir blues'u.</p>` }
+          ]
+        }
+      ],
+      instruments: [
+        {
+          id: 'guitar', title: 'Gitar', desc: 'Klavye, teller ve sonsuz olasılık.',
+          subs: [
+            { id: 'classic_g', name: 'Klasik Gitar', content: `<h2>Klasik Gitar</h2><p>Naylon telli, parmakla çalınan ve klasik müziğin temelini oluşturan gitar.</p>` },
+            {
+              id: 'electric_g', name: 'Elektro Gitar', content: `
+                        <h2>Elektro Gitar</h2>
+                        <p>Manyetikler sayesinde sesi elektriğe çeviren gitar. Rock ve Metal'in kalbi.</p>
+                        <h3>Temel Teknikler</h3>
+                        <ul>
+                            <li><strong>Bending:</strong> Teli iterek notayı inceltme.</li>
+                            <li><strong>Vibrato:</strong> Sesi dalgalandırma.</li>
+                            <li><strong>Hammer-on/Pull-off:</strong> Legato çalma teknikleri.</li>
+                        </ul>
+                        <div class="video-container"><iframe src="https://www.youtube.com/embed/Q4M4e4A8hEc" allowfullscreen></iframe></div>
+                    `},
+            { id: 'bass_g', name: 'Bas Gitar', content: `<h2>Bas Gitar</h2><p>Ritim ve melodinin köprüsü. Genellikle 4 telli ve kalın sesli.</p>` }
+          ]
+        },
+        {
+          id: 'piano', title: 'Piyano', desc: 'Tuşlu çalgıların atası.',
+          subs: [
+            { id: 'grand', name: 'Kuyruklu Piyano', content: `<h2>Kuyruklu Piyano</h2><p>Konser salonlarının vazgeçilmezi. Mekanik aksamı yataydır.</p>` }
+          ]
+        },
+        {
+          id: 'drums', title: 'Bateri', desc: 'Ritmin gücü.',
+          subs: [
+            { id: 'kit', name: 'Davul Seti', content: `<h2>Davul Seti</h2><p>Trampet, Kros, Tomlar ve Zillerden oluşur. 4 uzuv koordinasyonu gerektirir.</p>` }
+          ]
+        }
+      ]
+    };
+
+    // --- Application State ---
+    let currentUser = null;
+
+    // --- Init ---
+    window.addEventListener('load', () => {
+      loadUser();
+    });
+
+    function loadUser() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        const data = JSON.parse(raw);
+        const now = Date.now();
+        if ((now - data.savedAt) < EXPIRY_MS) {
+          currentUser = data;
+          initApp();
+          return;
+        }
+      }
+      // No valid user
+      document.getElementById('onboarding-overlay').style.display = 'flex';
+    }
+
+    function saveUser() {
+      const name = document.getElementById('inp-name').value.trim();
+      const level = document.getElementById('inp-level').value;
+      const inst = document.getElementById('inp-inst').value;
+
+      if (!name) return alert('Lütfen isim giriniz.');
+
+      currentUser = {
+        name, level, inst,
+        savedAt: Date.now()
+      };
+
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(currentUser));
+      document.getElementById('onboarding-overlay').style.display = 'none';
+      initApp();
+    }
+
+    function logout() {
+      if (confirm('Verileriniz silinecek. Emin misiniz?')) {
+        localStorage.removeItem(STORAGE_KEY);
+        location.reload();
+      }
+    }
+
+    function initApp() {
+      document.getElementById('app').classList.add('visible');
+      document.getElementById('user-display').textContent = `👤 ${currentUser.name} | ${currentUser.inst} | ${currentUser.level}`;
+
+      generateLesson();
+      renderWeeklyPlan();
+      renderCategories('genres-container', DB.genres);
+      renderCategories('instruments-container', DB.instruments);
+    }
+
+    // --- AI Lesson Logic ---
+    const LESSON_POOLS = {
+      'Başlangıç': [
+        "parmak açma egzersizleri yap. Metronomu 60 BPM'e ayarla.",
+        "açık pozisyon akor geçişlerine (Am - E) odaklan.",
+        "kromatik gam çalışması yap (1-2-3-4).",
+        "ritim kulağını geliştirmek için favori şarkına eşlik et.",
+        "temel majör gamı (Do Majör) 1. pozisyonda çalış."
+      ],
+      'Orta': [
+        "ritim varyasyonları dene. Metronomu 100 BPM yap.",
+        "Pentatonik gam üzerinde doğaçlama yap.",
+        "Alternate picking tekniğini 16'lık notalarla geliştir.",
+        "Legato (Hammer-on/Pull-off) kombinasyonları çalış.",
+        "Üçlemeler (Triplets) ile ritim duygunu zorla."
+      ],
+      'Profesyonel': [
+        "sınırlarını zorla. Poliritimler ve 160+ BPM üzerine çalış.",
+        "Sweep picking arpejlerini 5 telli formlarda dene.",
+        "Modları (Dorian, Lydian) birbirine bağlayarak solo at.",
+        "Hibrit picking (Pena + Parmak) tekniklerini uygula.",
+        "Karmaşık zaman imzaları (7/8, 5/4) üzerine riff yaz."
+      ]
+    };
+
+    function generateLesson() {
+      const level = currentUser.level;
+      const inst = currentUser.inst;
+      let pool = LESSON_POOLS[level] || LESSON_POOLS['Başlangıç'];
+
+      // Pick random
+      const randomTip = pool[Math.floor(Math.random() * pool.length)];
+
+      const topic = `${level} Seviye ${inst} Dersi`;
+      const lessonText = `Bugün senin için hedef: ${inst} üzerinde ${randomTip}`;
+
+      const box = document.getElementById('ai-lesson-box');
+      box.innerHTML = `<strong>${topic}</strong><p>${lessonText}</p>`;
+    }
+
+    // --- Weekly Plan Logic ---
+    function renderWeeklyPlan() {
+      const days = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
+      const planContainer = document.getElementById('weekly-plan');
+      let html = '';
+
+      // Simple generators based on level
+      const tasksBeginner = ['Parmak Egzersizi', 'Akor Geçişleri', 'Ritim Çalışması', 'Dinlenme', 'Gam Çalışması', 'Repertuar', 'Serbest Çalışma'];
+      const tasksInter = ['Isınma & Gamlar', 'Teknik (Legato)', 'Hız Egzersizi', 'Teori', 'Riff Yazımı', 'Kulak Eğitimi', 'Jam Session'];
+      const tasksPro = ['Advanced Warmup', 'Sweep/Tapping', 'Composition', 'Improvisation', 'Speed Picking', 'Live Sim.', 'Rest'];
+
+      let tasks = tasksInter;
+      if (currentUser.level === 'Başlangıç') tasks = tasksBeginner;
+      if (currentUser.level === 'Profesyonel') tasks = tasksPro;
+
+      days.forEach((day, index) => {
+        html += `
+                <div class="day-box">
+                    <span class="day-name">${day}</span>
+                    <span class="day-task">${tasks[index]}</span>
+                </div>
+            `;
+      });
+      planContainer.innerHTML = html;
+    }
+
+    // --- UI Rendering ---
+    function renderCategories(containerId, dataList) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = '';
+
+      dataList.forEach(item => {
+        let subsHtml = '';
+        item.subs.forEach(sub => {
+          // Escape simple quotes for onclick
+          const safeName = sub.name.replace(/'/g, "\\'");
+          subsHtml += `<button class="sub-btn" onclick="openContent('${item.id}', '${sub.id}')">› ${sub.name}</button>`;
+        });
+
+        const card = document.createElement('div');
+        card.className = 'content-card';
+        card.innerHTML = `
+                <div class="card-head">${item.title}</div>
+                <div class="card-sub">${item.desc}</div>
+                <div class="sub-menu">${subsHtml}</div>
+            `;
+
+        // Expand Interaction
+        card.onclick = (e) => {
+          // if clicked on button, don't toggle
+          if (e.target.tagName === 'BUTTON') return;
+
+          // Toggle active class
+          const isActive = card.classList.contains('active');
+          document.querySelectorAll('.content-card').forEach(c => c.classList.remove('active'));
+          if (!isActive) card.classList.add('active');
+        };
+
+        container.appendChild(card);
+      });
+    }
+
+    // --- Modal Logic ---
+    function openContent(catId, subId) {
+      let contentObj = null;
+
+      // Search in DB
+      const allGenres = DB.genres;
+      const allInsts = DB.instruments;
+
+      // Find in Genres
+      let parent = allGenres.find(g => g.id === catId);
+      if (parent) contentObj = parent.subs.find(s => s.id === subId);
+
+      // Find in Instruments
+      if (!contentObj) {
+        parent = allInsts.find(i => i.id === catId);
+        if (parent) contentObj = parent.subs.find(s => s.id === subId);
+      }
+
+      if (contentObj) {
+        document.getElementById('detail-body').innerHTML = contentObj.content;
+        document.getElementById('detail-modal').style.display = 'block';
+      }
+    }
+
+    function closeDetail() {
+      document.getElementById('detail-modal').style.display = 'none';
+      // Stop videos
+      const body = document.getElementById('detail-body');
+      const iframe = body.querySelector('iframe');
+      if (iframe) {
+        const src = iframe.src;
+        iframe.src = src; // Reset src to stop playback
+      }
+    }
+
+  </script>
 </body>
 
 </html>
